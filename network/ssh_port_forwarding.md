@@ -11,8 +11,10 @@ $ ssh -L 8080:xxx.xxx.xxx.xxx:80
 ```
 $ cd 
 $ vim .ssh/config
-HOST
+HOST fuga
   HostName xxx.xxx.xxx.xxx
   User hoge
   LocalForward   8080 localhost:8080 　<- 追記
+  
+$ ssh huga
 ```
