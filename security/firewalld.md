@@ -140,7 +140,8 @@ address-unreachable bad-header beyond-scope communication-prohibited destination
 ```
 
 ## サービスを追加する
-
+サービスはport番号の別名
+sshは22、httpなら80、dhcpv6-clientなら546が許可される
 ```
 $ firewall-cmd --permanent --add-service=https
 ```
@@ -180,4 +181,8 @@ public (active)
   source-ports:
   icmp-blocks:
   rich rules:
+```
+サービスの削除
+```
+$ firewall-cmd --remove-service=http
 ```
