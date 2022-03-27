@@ -1,0 +1,5 @@
+- wget
+- git
+- docker-ce
+- docker-compose
+- 
