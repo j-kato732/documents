@@ -2,4 +2,6 @@
 - git
 - docker-ce
 - docker-compose
-- 
+- fail2ban
+- httpd
+- python3
