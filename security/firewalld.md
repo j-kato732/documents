@@ -190,11 +190,32 @@ $ firewall-cmd --remove-service=http
 # ポートの開放
 8080番を解放する場合
 ```
-$ firewalld-cmd --add-port=8080/tcp
+$ firewall-cmd --add-port=8080/tcp
 ```
 
-上記のコマンドの場合、firewalldが再起動した場合設定が失われるため  
-恒久的に設定を変更する場合は`--parmanent`オプションを追加する
+解放されたか確認してみる  
+ports:に追加されていればOK
 ```
-$ firewalld-cmd --add-port=8080/tcp --parmanent
+$ firewall-cmd --list-all
+public (active)
+  target: default
+  icmp-block-inversion: no
+  interfaces: eth0
+  sources:
+  services: http https ssh
+  ports: 8080/tcp
+  protocols:
+  forward: no
+  masquerade: no
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+```
+
+
+上記のコマンドの場合、firewalldが再起動した場合設定が失われるため  
+恒久的に設定を変更する場合は`--permanent`オプションを追加する
+```
+$ firewall-cmd --add-port=8080/tcp --permanent
 ```
