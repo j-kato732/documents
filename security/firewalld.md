@@ -186,3 +186,15 @@ public (active)
 ```
 $ firewall-cmd --remove-service=http
 ```
+
+# ポートの開放
+8080番を解放する場合
+```
+$ firewalld-cmd --add-port=8080/tcp
+```
+
+上記のコマンドの場合、firewalldが再起動した場合設定が失われるため  
+恒久的に設定を変更する場合は`--parmanent`オプションを追加する
+```
+$ firewalld-cmd --add-port=8080/tcp --parmanent
+```
