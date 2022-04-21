@@ -29,7 +29,6 @@ sshアクセスに関する設定は、sshdに記述（これは`/etc/fail2ban/f
 $ vim /etc/fail2ban/jail.local
 [DEFAULT]
 ignoreip = 127.0.0.1/8 xxx.xxx.xxx.xxx xxx.xxx.xxx.xxx
-logpath   = /var/log/httpd/access_log
 banaction = firewallcmd-ipset
 bantime = 600
 findtime = 10
@@ -42,6 +41,25 @@ enabled = true
 bantime = 600000
 findtime = 10
 maxretry = 1
+```
+
+fail2ban-clientの再起動
+```
+$ fail2ban-client restart
+```
+
+# banされたIPアドレスの確認
+```
+$ fail2ban-client status sshd
+Status for the jail: sshd
+|- Filter
+|  |- Currently failed:	0
+|  |- Total failed:	0
+|  `- File list:	/var/log/auth.log
+`- Actions
+   |- Currently banned:	1
+   |- Total banned:	1
+   `- Banned IP list:	150.109.114.49
 ```
 
 # もし自分のIPがブロックされてしまったら
