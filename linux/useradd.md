@@ -20,3 +20,14 @@ $ useradd -g group_name -d /home/user_name user_name
 ```
 $ passwd user_name
 ```
+
+# ユーザにグループを追加
+-aを設定しないと、追加じゃなくて所属グループのセカンダリグループが置き換えられるだけになるので要注意
+```
+usermod -aG group_name user_name
+```
+
+sudoグループをユーザkatoに追加する場合
+```
+$ usermod -aG sudo kato
+```
