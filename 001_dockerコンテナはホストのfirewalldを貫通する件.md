@@ -47,9 +47,8 @@ docker (active)
 # 対策
 docker0のインターフェースをfirewallのdockerゾーンから削除
 ```
-ゾーンと Docker インターフェースは適切なものに書き換えてください。
-firewall-cmd --zone=trusted --remove-interface=docker0 --permanent
-firewall-cmd --reload
+sudo firewall-cmd --delete-zone=docker --permanent
+sudo firewall-cmd --reload
 ```
 
 その後、使いたいゾーンにdocker0を登録しよう
