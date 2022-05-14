@@ -6,6 +6,9 @@
 これはやばいと思って、publicゾーンにdocker0のインターフェースを追加してみたが、
 特に変化なし
 
+docker公式によるとdockerdを再起動するとfirewalldにdockerゾーンが追加されると書いてあった
+
+
 なのでdockerdを再起動しようとした
 ```
 aimo@localhost:~/aimo$ systemctl restart docker
