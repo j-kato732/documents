@@ -107,3 +107,69 @@ publicにdokcer0追加したんやけどな...
 よくわからない...
 
 再インストールしたほうが早いのかもしれない
+
+# 解決
+dockerを再インストールしてみました
+
+すると新たにfirewalldにdockerゾーンが追加されて、
+dockerdを起動できた
+
+良かったー
+
+以下手順
+```
+$ sudo apt remove docker docker-engine docker.io containerd runc
+$ sudo apt install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+```
+
+```
+$ firewall-cmd --list-all --zone=docker
+docker (active)
+  target: ACCEPT
+  icmp-block-inversion: no
+  interfaces: docker docker0
+  sources:
+  services:
+  ports:
+  protocols:
+  forward: no
+  masquerade: no
+  forward-ports:
+  source-ports:
+  icmp-blocks:
+  rich rules:
+```
+```
+$ sudo firewall-cmd --change-interface=docker0 --zone=docker
+sucesses
+```
+
+```
+$ sudo systemctl start docker
+$ sudo systemctl status docker 
+● docker.service - Docker Application Container Engine
+     Loaded: loaded (/lib/systemd/system/docker.service; enabled; vendor preset: enabled)
+     Active: active (running) since Sat 2022-05-14 11:24:48 UTC; 13min ago
+TriggeredBy: ● docker.socket
+       Docs: https://docs.docker.com
+   Main PID: 244246 (dockerd)
+      Tasks: 11
+     Memory: 41.0M
+        CPU: 305ms
+     CGroup: /system.slice/docker.service
+             └─244246 /usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock
+
+May 14 11:24:47 localhost dockerd[244246]: time="2022-05-14T11:24:47.971975195Z" level=info msg="Loading containers: start."
+May 14 11:24:48 localhost dockerd[244246]: time="2022-05-14T11:24:48.018222905Z" level=info msg="Firewalld: docker zone already exists, returning"
+May 14 11:24:48 localhost dockerd[244246]: time="2022-05-14T11:24:48.188536810Z" level=info msg="Default bridge (docker0) is assigned with an IP address 172.17.0.0/16. Daemon option --bip can be used to >
+May 14 11:24:48 localhost dockerd[244246]: time="2022-05-14T11:24:48.247037828Z" level=info msg="Firewalld: interface docker0 already part of docker zone, returning"
+May 14 11:24:48 localhost dockerd[244246]: time="2022-05-14T11:24:48.272885787Z" level=info msg="Firewalld: interface docker0 already part of docker zone, returning"
+May 14 11:24:48 localhost dockerd[244246]: time="2022-05-14T11:24:48.386841137Z" level=info msg="Loading containers: done."
+May 14 11:24:48 localhost dockerd[244246]: time="2022-05-14T11:24:48.477450933Z" level=info msg="Docker daemon" commit=87a90dc graphdriver(s)=overlay2 version=20.10.14
+May 14 11:24:48 localhost dockerd[244246]: time="2022-05-14T11:24:48.478596885Z" level=info msg="Daemon has completed initialization"
+May 14 11:24:48 localhost systemd[1]: Started Docker Application Container Engine.
+May 14 11:24:48 localhost dockerd[244246]: time="2022-05-14T11:24:48.508576400Z" level=info msg="API listen on /run/docker.sock"
+```
+
+
+```
