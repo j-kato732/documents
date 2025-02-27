@@ -1,0 +1,52 @@
+# golang
+2009年にGoogleが開発した言語。
+複雑化されたプロジェクトをシンプルに記述することを目的とされた言語。
+
+そのためシンプルな言語
+
+他に
+- 実行速度が早い（C言語に迫る勢い）
+- 豊富な標準パッケージを持つ
+- 安全性が高いかつメモリセーフ（性的片付け言語）
+- 並行処理・並列処理が言語レベルで備わっている
+
+
+# Hello World
+Golangのコードは基本的に何処かのパッケージに属しているため、packageの宣言から始まる
+Printを行うためにはfmtパッケージをインポートする。fmt.Println()関数でコンソールに改行付きで出力する。
+```go
+package main
+
+import "fmt"
+
+func main() {
+  fmt.Pringln("Hello world")
+}
+```
+
+実行するためには、所定のディレクトリに移動して`go run main.go`
+
+## パッケージを追加する
+標準パッケージは公式に乗ってある。
+今回はtimeをついかする。再度importを記述することもできるが、カッコでくくって複数指定することも可能。
+基本的には後者が推奨される。
+```go
+package main
+
+import (
+    "fmt"
+    "time"
+)
+
+func main() {
+    fmt.Println("Hello world")
+    fmt.Println(time.Now())
+}
+```
+
+実行すると時刻が表示される
+```
+❯ go run main.go
+Hello world
+2025-02-27 19:28:41.621567 +0900 JST m=+0.000229334
+```
