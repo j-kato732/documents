@@ -10,6 +10,71 @@
 - 安全性が高いかつメモリセーフ（性的片付け言語）
 - 並行処理・並列処理が言語レベルで備わっている
 
+# ソースコードの配置場所
+Golangのソースコードの配置場所はGolangのVersionによって異なる
+- 1.11以前
+  - GoPATH必須時代
+  - 環境変数にディレクトリを指定、そのディレクトリ配下にsrcディレクトリを作成後、srcに各ファイルを配置する
+- 1.11以降
+  - GoModuleの導入された
+  - `go mod init`コマンドでプロジェクトを初期化、依存関係を`go.mod`で管理する
+- 1.13以降
+  - Go Moduleがデフォルトに。一方でGOPATHは非推奨に
+
+そのため現在（2025/2時点）では、基本的に
+- GoModuleを利用、`go mod init`でプロジェクトを作成
+- 依存関係は`go.mod`と`go.sum`ファイルで管理
+
+基本的にはGoModuleが有効化されているので問題ないとは思うが、無効になっている場合には要注意
+確認には`go env`コマンドで、関連する環境変数をすべて確認することができる
+
+`GO111MODULE`が`on`もしくは`auto`であれば良し。
+
+```bash
+GO111MODULE='on'
+GOARCH='amd64'
+GOBIN=''
+GOCACHE='/Users/katojin/Library/Caches/go-build'
+GOENV='/Users/katojin/Library/Application Support/go/env'
+GOEXE=''
+GOEXPERIMENT=''
+GOFLAGS=''
+GOHOSTARCH='amd64'
+GOHOSTOS='darwin'
+GOINSECURE=''
+GOMODCACHE='/Users/katojin/go/pkg/mod'
+GONOPROXY=''
+GONOSUMDB=''
+GOOS='darwin'
+GOPATH='/Users/katojin/go'
+GOPRIVATE=''
+GOPROXY='https://proxy.golang.org,direct'
+GOROOT='/usr/local/Cellar/go/1.23.6/libexec'
+GOSUMDB='sum.golang.org'
+GOTMPDIR=''
+GOTOOLCHAIN='auto'
+GOTOOLDIR='/usr/local/Cellar/go/1.23.6/libexec/pkg/tool/darwin_amd64'
+GOVCS=''
+GOVERSION='go1.23.6'
+GODEBUG=''
+GOTELEMETRY='local'
+GOTELEMETRYDIR='/Users/katojin/Library/Application Support/go/telemetry'
+GCCGO='gccgo'
+GOAMD64='v1'
+AR='ar'
+CC='cc'
+CXX='c++'
+CGO_ENABLED='1'
+GOMOD='/dev/null'
+GOWORK=''
+CGO_CFLAGS='-O2 -g'
+CGO_CPPFLAGS=''
+CGO_CXXFLAGS='-O2 -g'
+CGO_FFLAGS='-O2 -g'
+CGO_LDFLAGS='-O2 -g'
+PKG_CONFIG='pkg-config'
+GOGCCFLAGS='-fPIC -arch x86_64 -m64 -pthread -fno-caret-diagnostics -Qunused-arguments -fmessage-length=0 -fdebug-prefix-map=/var/folders/59/35xb688d0171__89tzn6995w0000gn/T/go-build2635417996=/tmp/go-build -gno-record-gcc-switches -fno-common'
+```
 
 # Hello World
 Golangのコードは基本的に何処かのパッケージに属しているため、packageの宣言から始まる
@@ -50,3 +115,33 @@ func main() {
 Hello world
 2025-02-27 19:28:41.621567 +0900 JST m=+0.000229334
 ```
+
+# Goのプログラム実行方法
+- `go run　{file_path}`
+  - 直接プログラムを実行する
+  - 手軽に実行できる
+- `go build {file_path}`
+  - ソースコードをコンパイルする。コンパイルが完了すると実行ファイルを生成する。
+  - -oで出力する実行ファイルの名前を指定可能
+  - 例：`go build -o main main.go`
+
+コンパイルのメリット
+- ネイティブコードに変換されるため、高速
+- マルチプラットフォームで動作する
+
+マルチプラットフォームはでかい。
+Goの特徴の一つであり、OSやCPUによる実行環境の際を隠蔽してくれる
+- widnowsの場合は実行ファイルの拡張子を`.exe`にしてあげれば良い
+  - `go build -o main.exe main.go`
+
+環境を指定したい場合には`GOOS`と`GOARCH`という環境変数を指定する。
+例えばLinux環境に合わせてコンパイルする場合
+`GOOS=linux GOARCH=amd64 go build -o main main.go`
+
+## なぜマルチプラットフォームが可能なのか
+いくつか要因が
+- そもそもマルチプラットフォームを行うような思想で設計された。
+- 設計
+  - コンパイラがフロントエンドとバックエンドに分かれている
+  - フロントが構文解析と意味解析。バックが各ターゲット向けにコードを生成
+
