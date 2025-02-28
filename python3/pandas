@@ -1,0 +1,15 @@
+# csv開く
+```python
+import pandas as pd
+df = pd.read_csv("example.csv")
+```
+header=None,
+names=["key","value"]
+encoding='shift-jis'
+
+# Dataframe操作
+df['key']
+
+特定の文字が含まれる行をフィルタ
+`df[df['key'].str.contains('user_prompt_', na=False)`
+na: からのセルをFalseとして扱う
