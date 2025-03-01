@@ -145,3 +145,265 @@ Goの特徴の一つであり、OSやCPUによる実行環境の際を隠蔽し�
   - コンパイラがフロントエンドとバックエンドに分かれている
   - フロントが構文解析と意味解析。バックが各ターゲット向けにコードを生成
 
+
+# 変数の定義
+- 明示的な変数定義
+- 暗黙的な定義
+  - 型は推論してくれる
+  - 関数外で定義することはできない
+
+基本的に明示的に書くほうが良い
+
+## 明治的な変数定義
+```go
+var number int = 
+
+## 暗黙的な定義
+```go
+func main() {
+  s1 := "hello world"
+  n1 := 12
+}
+```
+
+型推論してくれる
+しかしグローバルスコープで定義することはできない
+
+```go
+package main
+
+import (
+	"fmt"
+)
+
+s4 := "String"
+fmt.Println(s4)
+```
+
+```
+❯ go run main.go
+# command-line-arguments
+./main.go:8:1: syntax error: non-declaration statement outside function body
+```
+
+## 複数の変数を1行で定義することも可能
+型が同じ場合to型が異なる場合
+```go
+var n1, n2 int = 1, 2
+fmt.Println(n1, n2)
+
+var (
+  n3 int    = 3
+  s  string = "Hello Go"
+)
+fmt.Println(n3, s)
+```
+
+## 初期値を決めない方法（型だけの定義）
+```
+// 初期値を決めない
+var n4 int
+var s2 string
+fmt.Println(n4)
+fmt.Println(s2)
+```
+この場合は各型の初期値が設定される
+intは0, stringは空文字列
+```go
+❯ go run main.go
+Hello world
+2025-03-01 14:15:46.238084 +0900 JST m=+0.000901584
+0
+
+```
+
+## 変数のスコープはいくつか
+基本的に「変数の宣言以降、宣言したブロックの終端まで」
+- グローバルスコープ
+グローバルで宣言された変数は同一パッケージ内の他のファイル空も参照可能
+
+- ローカルスコープ
+関数内で定義された変数は、その関数内でのみ使用可能
+
+- ループ内スコープ
+forループ内で定義された変数は、そのループ内でのみ使用可能
+
+- 条件文内スコープ
+if文もforと同様で、if文内で宣言された変数もそのブロック内でのみ使用可能
+
+
+# 型
+各変数は型を持つ
+型の確認には`fmt.Println("%T\n", hennsuu)`を利用する
+
+# int型
+ひとえにint型といってもいくつか種類があることに注意
+intXXの後ろの数値はbitを表し、表現できる数値の大きさが異なる
+- int
+  - 使用しているPCのBitに準拠する（大体64 or 32)
+- int64
+  - 2^64 -9223372036854775808 ~ 9223372036854775807
+- int32
+  - 2^33 -2147783648 ~ 2147783647
+- int16
+  - 2^16 -32768 ~ 32767
+- int8
+  - 2^8 -128 ~ 127
+
+またこの異なるint型同士での数値計算もできないので注意
+```go
+var i8 int8 = 2
+var i16 int16 = 32
+fmt.Println(i8 + i16)
+```
+```
+❯ go run main.go
+# command-line-arguments
+./main.go:11:14: invalid operation: i8 + i16 (mismatched types int8 and int16)
+```
+
+私のPCは64bitでありint型もint64として裏では扱われているが、別物なので注意
+```go
+var i int = 32
+var i64 int64 = 123
+fmt.Println(i + i64)
+```
+```
+❯ go run main.go
+# command-line-arguments
+./main.go:11:14: invalid operation: i + i64 (mismatched types int and int64)
+
+## int型の変換
+int型の変換をするには各種関数を利用する
+- int8()
+- int16()
+- int32()
+- int64()
+
+
+```go
+var i int = 32
+var i64 int64 = 123
+fmt.Println(int64(i) + i64)
+```
+```go
+❯ go run main.go
+int
+155
+```
+
+## 変換時のオーバフローに注意
+`var i int32 = 300`を`int8(i)`へ変換するとどうなるだろうか
+
+コンパイルエラー？例外を吐く？
+
+正解は`44`になる
+これはオーバーフローがおきた場合、下位ビットのみが保持されるため
+
+300を2進数にすると以下
+```
+300 = 00000000 00000000 00000001 00101100 (int32)
+```
+
+int8は8ビットのみ保持するので変換後の値は
+```
+00101100
+```
+
+これは10進数で`44`となる
+
+# float型
+floatは2つの型がある
+- float64
+- float32
+
+64の場合は10進数において約15桁の少数を表現する。一方で32bitは約10桁を表現可能。
+bit数が小さいほうがメモリ効率が良く、メモリに制約のある組み込みやモバイルの場合には32bitを用いることもあるが、
+現代のWebではハードが高性能であり問題にならないため基本的に64bitを使うことが推奨される
+
+また型推論をさせた場合は必ず64bitが用いられる（intの型推論のように環境依存ではないため注意）
+
+# uintとcomplex
+- uint
+  - intの整数のみVersion
+  - int型と同様`uint8`, `uint16`, 'uint32`, `uint64`がある
+- complex
+  - 複素数型
+  - `complex64 = -5 + 12i`
+
+
+これらは特定の分野で使われるため、頭の片隅においておく。Webでの出番は多くない。
+具体的には以下の場面で有効的
+- uint
+  - 負の数が不要な場合
+    - カウンターやループのインデックス
+    - iDやサイズ、負の数がありえないデータ
+  - ビット演算(AND, OR, XOR, 左シフト, 見日シフト)
+- complex
+  - 科学技術計算（波動方程式、電磁気学（フーリエ変換）、量子計算）
+  - 信号処理（FFT（高速フーリエ変換）、デジタルフィルター）
+
+# bool型
+2値（True、False)を取り真偽を表現する
+```go
+var t bool = ture
+var f bool = false
+fmt.Println(t, f)
+```
+
+# string型
+stringは文字列を表現する型
+
+```go
+var s string = "Hello world"
+```
+
+裏ではbyte型の配列として扱われている
+そのため配列のようにインデクスを指定して、部分取得することが可能
+```go
+var s string = "Hello World"
+fmt.Println(s[0])
+```
+
+byte配列として扱われているためHは72となる
+```
+❯ go run main.go
+72
+``
+
+文字として取るためにはstring()に変換する
+```
+var s string = "Hello World"
+fmt.Println(string(s[0]))
+```
+❯ go run main.go
+H
+```
+
+## 複数行の表示
+複数行の文字列の表現には`バッククォートを利用する
+```
+var ss string = `hello
+hello
+  hello`
+
+fmt.Println(ss)
+```
+
+# byte型
+byteデータ型はuint8の別名で、主にバイナリデータや文字列の扱いに用いられる。
+つまり、`byte`は`uint8`と同様0 ~ 255までの値を取ることが可能。
+バイナリフィルやネットワークストリームのんバイナリデータなど、生のデータを表現するためによく使われる。
+```go
+var b byte = 72
+fmt.Println(b)
+fmt.Println(string(b))
+```
+
+基本的に数値を扱うためのものであるため、そのまま出力することも可能
+ただその数値を文字列にキャストすると、GolangがAscii基準で文字列に変換してくれる
+```
+❯ go run main.go
+72
+H
+```
